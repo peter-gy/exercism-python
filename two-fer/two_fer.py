@@ -1,3 +1,2 @@
-def two_fer(name=None):
-    name = 'you' if name == None else name
+def two_fer(name='you'):
     return f'One for {name}, one for me.'
