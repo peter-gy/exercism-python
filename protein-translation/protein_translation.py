@@ -1,27 +1,32 @@
-protein_tuples = [
-    (['AUG'], 'Methionine'),
-    (['UUU', 'UUC'], 'Phenylalanine'),
-    (['UUA', 'UUG'], 'Leucine'),
-    (['UCU', 'UCC', 'UCA', 'UCG'], 'Serine'),
-    (['UAU', 'UAC'], 'Tyrosine'),
-    (['UGU', 'UGC'], 'Cysteine'),
-    (['UGG'], 'Tryptophan'),
-    (['UAA', 'UAG', 'UGA'], 'STOP')
-]
+from itertools import takewhile
+from textwrap import wrap
+
+
+catalogue = {
+    'AUG': 'Methionine',
+    'UUC': 'Phenylalanine',
+    'UUU': 'Phenylalanine',
+    'UUA': 'Leucine',
+    'UUG': 'Leucine',
+    'UCU': 'Serine',
+    'UCC': 'Serine',
+    'UCA': 'Serine',
+    'UCG': 'Serine',
+    'UAC': 'Tyrosine',
+    'UAU': 'Tyrosine',
+    'UGC': 'Cysteine',
+    'UGU': 'Cysteine',
+    'UGG': 'Tryptophan',
+}
+
+
+def is_not_stop(pattern):
+    return pattern not in ('UAG', 'UAA', 'UGA')
+
 
 def proteins(strand):
-    if len(strand) % 3 != 0: raise Exception("A DNA strand's length must be a multiple of 3")
-    codons = [strand[i:i+3] for i in range(0, len(strand), 3)]
-    result = []
-    for codon in codons:
-        for t in protein_tuples:
-            if codon in t[0]:
-                if t[1] == 'STOP':
-                    return result
-                elif t[1] not in result:
-                    result.append(t[1])
-    
-    return result
-
-
-print(protein_tuples[0][1])
+    print(wrap(strand, 3))
+    return [protein
+            for codon in takewhile(is_not_stop, wrap(strand, 3)) # considering codons only while a 'STOP' codon is not reached
+            for protein in (catalogue.get(codon),) # tuple with a single element
+            if protein] # eliminating codons not existing in catalogue
